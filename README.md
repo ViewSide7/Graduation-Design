@@ -43,10 +43,11 @@ Intelligent air combat decision method for MAV-UAV formation based on multi-agen
 #### 一、对研究内容的解读
 
 >1. 基于博弈理论的有人/无人机编队智能空战决策模型；
->
 >2. 基于强化学习的有人/无人机编队智能决策优化算法。
 
-##### 什么是博弈理论？
+#### 二、提出对研究内容的问题
+
+##### 1. 什么是博弈理论？
 
 * Player：我方战斗机
 
@@ -56,18 +57,16 @@ Intelligent air combat decision method for MAV-UAV formation based on multi-agen
 
 * Payment：每一次决策得到的分数，一般是矩阵形式
 
+  > 支付矩阵设置具有主观性，需要引入专家知识
+
 * Situation：每一次决策后形成的局势
 
-1. 博弈模型一般形式：
-   $$
-   G = {I, S, P}
-   $$
-   其中，$I$ 是参与者的集合，$S$ 是策略集合，$P$ 是支付函数
-
+1. 博弈模型：完全信息静态博弈——纳什均衡
 2. 红蓝两方对决可以简化为两人博弈吗？
 3. 现在的问题是参与者要独立选择自己的策略，且在不知道对方策略的情况下使得自己得到最大的利益
+4. **思路：**每一时间节点检查当前局势，通过局势信息确定支付矩阵，进行博弈选择
 
-##### 什么是空战决策？
+##### 2. 什么是空战决策？
 
 根据《多对多无人机空战的智能决策研究》，空战决策可以分为以下两个部分：
 
@@ -75,4 +74,73 @@ Intelligent air combat decision method for MAV-UAV formation based on multi-agen
 
 * 机动决策
 
-##### 强化学习如何应用？
+##### 3. 强化学习如何应用？
+
+#### 三、现存有关模型、方法
+
+##### 1. 几何空间关系矩阵
+
+对于某有人/无人机 $i$，其他某飞机 $j$ 与其之间几何关系以下考虑 5 个参数：
+
+* 两机之间距离 $d^i_j$
+* 该飞机对某飞机的滞后角 $\alpha^i_j$
+* 该飞机对某飞机的超前角 $\beta^i_j$
+
+则有：
+$$
+\left\{\begin{aligned}
+
+& d^i_j = \abs{\vec d^i_j} = \sqrt{(x_i - x_j)^2 + (y_i - y_j)^2 + (z_i - z_j)^2}\\
+
+& \alpha^i_j = \arccos{\frac{\vec v_i \cdot \vec d^i_j}{v_i \cdot d^i_j}}\\
+
+& \beta^i_j = \arccos{\frac{\vec v_j \cdot \vec d^i_j}{v_j \cdot d^i_j}}\\
+
+\end{aligned}\right.
+$$
+
+##### 2. 局势优势评价函数
+
+> 表示某架有/无人机对另一架有/无人机相对优势的大小。优势函数越大，我方无人机生存并击毁敌机的可能性越大
+>
+> 包含：角度优势、距离优势和能量优势
+>
+> 感觉可以作为支付函数矩阵的计算依据
+
+###### 角度优势函数
+
+$$
+G_A = 1 - \frac{\alpha^i_j+\beta^i_j}{180}
+$$
+
+###### 距离优势函数
+
+$$
+G_D = 
+
+\left\{\begin{aligned}
+
+& 1 & d \le R_0\\
+& e^{- \frac{d-R_0}{k}} & d >R_0\\
+
+\end{aligned}\right.
+$$
+
+其中，其中 $d$ 是我机与敌机之间的距离；$R_0$ 是机载武器最佳射程；$k$ 是无量纲参数
+
+###### 能量优势函数
+
+$$
+G_E = 
+
+\left\{\begin{aligned}
+
+& 1 & \eta\geq 2\\
+
+& 0.6 \eta -0.2 & 0.5\le\eta < 2\\
+
+& 0.1 & \eta < 0.5
+
+\end{aligned}\right.
+$$
+
