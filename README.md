@@ -144,3 +144,22 @@ G_E =
 \end{aligned}\right.
 $$
 
+其中 $\eta = E_B/E_R$，表示我方和敌方无人机能量之比，其能量定义为：
+$$
+E = H+\frac{v^2}{2g}
+$$
+其中，$H$ 为飞机的高度，$g$ 为重力加速度
+
+###### 优势函数和优势矩阵：
+
+$$
+G = \omega_1G_A\times G_D+\omega_2G_E\\
+G = \begin{bmatrix}
+G_{11} & G_{12} & \cdots & G_{1n}\\
+G_{21} & G_{22} & \cdots & G_{2n}\\
+\vdots & \vdots & \ddots & \vdots\\
+G_{m1} & G_{m2} & \cdots & G_{mn}\\
+\end{bmatrix}
+$$
+
+其中，$\omega_1$ 和 $\omega_2$ 为各优势函数的权重，$G_{ij}$ 表示我方第 $i$ 架无人机对敌方第 $j$ 架无人机的优势函数的值
